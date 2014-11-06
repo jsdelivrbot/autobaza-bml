@@ -1,6 +1,6 @@
 (function() {
     window.loadBookmarklet =  function() {
-        jQuery.getScript('https://raw.githubusercontent.com/kristache/autobaza-bml/master/min/bookmarklet-min.js', function() {
+        jQuery.getScript('https://rawgit.com/kristache/autobaza-bml/master/min/bookmarklet-min.js', function() {
             googleApiClientReady();
         });
     };
