@@ -71,7 +71,8 @@
                     createPlaylist();
                 }
             } else {
-                alert('Could not retrieve playlists');
+                // alert('Could not retrieve playlists');
+                createPlaylist();
             }
         });
     }
