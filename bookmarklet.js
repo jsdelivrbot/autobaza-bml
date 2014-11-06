@@ -47,7 +47,33 @@
     }
 
     function handleAPILoaded() {
-        createPlaylist();
+        getPlaylist();
+    }
+
+    function getPlaylist() {
+        var request = gapi.client.youtube.playlists.list({
+            part: 'snippet',
+            mine: true
+        });
+
+        request.execute(function(response) {
+            var result = response.result;
+            if (result) {
+                jQuery.each(result.items, function(i, item) {
+                    if (item.snippet.title === 'My Garage') {
+                        playlistId = item.id;
+                    }
+                });
+
+                if (playlistId) {
+                    searchVideo();
+                } else {
+                    createPlaylist();
+                }
+            } else {
+                alert('Could not retrieve playlists');
+            }
+        });
     }
 
     function createPlaylist() {
