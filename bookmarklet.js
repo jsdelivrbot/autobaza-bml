@@ -17,7 +17,7 @@
             'show,table,time,timeEnd,timeline,timelineEnd,timeStamp,trace,warn').split(',');
         while (prop = properties.pop()) con[prop] = con[prop] || empty;
         while (method = methods.pop()) con[method] = con[method] || dummy;
-    })(this.console = this.console || {});
+    })(window.console = window.console || {});
 
     window.googleApiClientReady = function() {
         console.log('[abbml] Autobaza Bookmarklet', VERSION);
