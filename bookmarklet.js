@@ -7,8 +7,20 @@
 
     var playlistId;
 
+    (function(con) {
+        var prop, method;
+        var empty = {};
+        var dummy = function() {};
+        var properties = 'memory'.split(',');
+        var methods = ('assert,clear,count,debug,dir,dirxml,error,exception,group,' +
+            'groupCollapsed,groupEnd,info,log,markTimeline,profile,profiles,profileEnd,' +
+            'show,table,time,timeEnd,timeline,timelineEnd,timeStamp,trace,warn').split(',');
+        while (prop = properties.pop()) con[prop] = con[prop] || empty;
+        while (method = methods.pop()) con[method] = con[method] || dummy;
+    })(this.console = this.console || {});
+
     window.googleApiClientReady = function() {
-        console.log('Autobaza Bookmarklet', VERSION);
+        console.log('[abbml] Autobaza Bookmarklet', VERSION);
 
         if(window.location.href.indexOf("autobazaradio.ro") === -1) {
             alert("This only works on Autobaza Radio!");
@@ -21,6 +33,8 @@
     };
 
     function checkAuth() {
+        console.log('[abbml] Checking authentication');
+
         gapi.auth.authorize({
             client_id: OAUTH2_CLIENT_ID,
             scope: OAUTH2_SCOPES,
@@ -29,9 +43,13 @@
     }
 
     function handleAuthResult(authResult) {
+        console.log('[abbml] Auth result: %o', authResult);
+
         if (authResult && !authResult.error) {
             loadAPIClientInterfaces();
         } else {
+            console.log('[abbml] Attempt OAuth2');
+
             gapi.auth.authorize({
                 client_id: OAUTH2_CLIENT_ID,
                 scope: OAUTH2_SCOPES,
@@ -41,16 +59,22 @@
     }
 
     function loadAPIClientInterfaces() {
+        console.log('[abbml] Load GAPI YouTube');
+
         gapi.client.load('youtube', 'v3', function() {
             handleAPILoaded();
         });
     }
 
     function handleAPILoaded() {
+        console.log('[abbml] GAPI YouTube successfully loaded');
+
         getPlaylist();
     }
 
     function getPlaylist() {
+        console.log('[abbml] Retrieve "My Garage" playlist');
+
         var request = gapi.client.youtube.playlists.list({
             part: 'snippet',
             mine: true
@@ -58,6 +82,8 @@
 
         request.execute(function(response) {
             var result = response.result;
+            console.log('[abbml] Retrieval result: %o', result);
+
             if (result) {
                 jQuery.each(result.items, function(i, item) {
                     if (item.snippet.title === 'My Garage') {
@@ -77,6 +103,8 @@
     }
 
     function createPlaylist() {
+        console.log('[abbml] Create "My Garage" playlist');
+
         var request = gapi.client.youtube.playlists.insert({
             part: 'snippet,status',
             resource: {
@@ -92,6 +120,8 @@
 
         request.execute(function(response) {
             var result = response.result;
+            console.log('[abbml] Creation result: %o', result);
+
             if (result) {
                 playlistId = result.id;
                 console.log(result);
@@ -104,20 +134,27 @@
     }
 
     function searchVideo() {
+        console.log('[abbml] Search video');
+
         var q = window.frames[0].window.md.innerHTML;
+        console.log('[abbml] Query string:', q);
+
         var request = gapi.client.youtube.search.list({
             q: q,
             part: 'snippet'
         });
 
         request.execute(function(response) {
-            console.log(response.result);
+            var result = response.result;
+            console.log('[abbml] Search results: %o', result);
 
-            addToPlaylist(response.result.items[0].id.videoId);
+            addToPlaylist(result.items[0].id.videoId);
         });
     }
 
     function addToPlaylist(id) {
+        console.log('[abbml] Add video to playlist');
+
         var details = {
             videoId: id,
             kind: 'youtube#video'
@@ -134,7 +171,8 @@
         });
 
         request.execute(function(response) {
-            console.log(response.result);
+            var result = response.result;
+            console.log('[abbml] Addition result: %o', result);
         });
     }
 }());
